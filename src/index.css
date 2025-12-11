@@ -5,9 +5,9 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
+  color-scheme: dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: #000000;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -19,8 +19,20 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  background-color: #000;
+  color: #fff;
+}
+
+@utility bg-grid-pattern {
+  background-size: 40px 40px;
+  background-image: linear-gradient(to right, #ffffff05 1px, transparent 1px),
+    linear-gradient(to bottom, #ffffff05 1px, transparent 1px);
 }
 
 @utility glass-panel {
-  @apply bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl shadow-xl;
+  @apply bg-black/40 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl;
+}
+
+@utility text-gradient {
+  @apply bg-clip-text text-transparent bg-linear-to-r from-white via-white to-gray-400;
 }
