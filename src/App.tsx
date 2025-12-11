@@ -4,10 +4,23 @@ import "./index.css";
 
 function App() {
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [sessionName, setSessionName] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-
+  const [copied, setCopied] = useState(false);
   const chatId = import.meta.env.VITE_CHAT_ID;
   const apiKey = import.meta.env.VITE_API_KEY;
+
+  const handleCopySessionName = async () => {
+    if (sessionName) {
+      try {
+        await navigator.clipboard.writeText(sessionName);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch (err) {
+        console.error("Failed to copy:", err);
+      }
+    }
+  };
 
   useEffect(() => {
     const initSession = async () => {
@@ -18,13 +31,15 @@ function App() {
 
       try {
         const client = new NonefinityClient({ apiKey });
+        const generatedName = `${crypto.randomUUID()}`;
         const result = await client.createSession({
           chat_config_id: chatId,
-          name: `Demo Session ${new Date().toISOString()}`,
+          name: generatedName,
         });
 
         if (result.success && result.data?.id) {
           setSessionId(result.data.id);
+          setSessionName(generatedName);
         } else {
           setError(result.error || "Failed to create session");
         }
@@ -129,7 +144,49 @@ function App() {
                     d="M5 13l4 4L19 7"
                   />
                 </svg>
-                <span>Session Active: {sessionId.slice(0, 8)}...</span>
+                <span className="max-w-xs overflow-x-auto whitespace-nowrap">
+                  Session: {sessionName}
+                </span>
+                <button
+                  onClick={handleCopySessionName}
+                  className="ml-2 p-1 hover:bg-green-500/10 rounded transition-colors relative group"
+                  title="Copy session name"
+                >
+                  {copied ? (
+                    <svg
+                      className="w-4 h-4 text-green-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  ) : (
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                      />
+                    </svg>
+                  )}
+                  {copied && (
+                    <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-green-500 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+                      Copied!
+                    </span>
+                  )}
+                </button>
               </div>
             )}
           </div>
